@@ -30,7 +30,7 @@ if [[ -n "${KIT_SOURCE:-}" ]]; then
 else
   tmp="$(mktemp -d)"
   trap 'rm -rf "$tmp"' EXIT
-  git clone --quiet --depth 1 --branch "$KIT_REF" "$KIT_GIT_URL" "$tmp/kit" \
+  git -c advice.detachedHead=false clone --quiet --depth 1 --branch "$KIT_REF" "$KIT_GIT_URL" "$tmp/kit" \
     || die "Could not clone $KIT_GIT_URL (ref: $KIT_REF)"
   KIT="$tmp/kit"
 fi
