@@ -45,10 +45,13 @@ RULES=(); PLUGINS=()
 # shellcheck source=/dev/null
 source "$profile_file"
 
-# 1. Rules: .claude/rules/kit/ is owned by the kit and replaced on every install.
-#    Project-specific rules live outside kit/ and are left untouched.
-rules_dir="$TARGET/.claude/rules/kit"
+# 1. Rules: .claude/rules/duyben-kit/ is owned by the kit and replaced on every install.
+#    Project-specific rules live outside it and are left untouched.
+rules_dir="$TARGET/.claude/rules/$KIT_NAME"
 rm -rf "$rules_dir"
+# Older kit versions installed into .claude/rules/kit/; remove it only if the kit created it
+legacy_dir="$TARGET/.claude/rules/kit"
+[[ -f "$legacy_dir/.kit-info" ]] && rm -rf "$legacy_dir"
 mkdir -p "$rules_dir"
 for r in "${RULES[@]}"; do
   [[ -d "$KIT/rules/$r" ]] || die "Profile '$PROFILE' references rules/$r, which does not exist"
@@ -92,7 +95,7 @@ jq --slurpfile base "$KIT/templates/settings.json" \
 ' "$settings" > "$settings.tmp" && mv "$settings.tmp" "$settings"
 
 echo "Installed $KIT_NAME (profile: $PROFILE, version: $version) into $(cd "$TARGET" && pwd)"
-echo "  - Rules:      .claude/rules/kit/ (${RULES[*]})"
+echo "  - Rules:      .claude/rules/$KIT_NAME/ (${RULES[*]})"
 echo "  - Plugins:    ${PLUGINS[*]}"
 echo "  - CLAUDE.md:  $claude_md_msg"
 echo "  - Settings:   .claude/settings.json"

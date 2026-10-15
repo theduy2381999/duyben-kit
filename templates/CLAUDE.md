@@ -31,6 +31,6 @@
 <Things Claude needs to know that cannot be inferred from the code.>
 
 <!--
-Shared rules are installed by duyben-kit into .claude/rules/kit/ and loaded automatically.
-Project-specific rules go in .claude/rules/ (outside the kit/ folder).
+Shared rules are installed by duyben-kit into .claude/rules/duyben-kit/ and loaded automatically.
+Project-specific rules go in .claude/rules/ (outside the duyben-kit/ folder).
 -->

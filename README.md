@@ -12,7 +12,7 @@ duyben-kit/
 │   ├── core/                 # Shared by every project
 │   ├── frontend/             # React / TypeScript
 │   └── python/               # Python
-├── rules/                    # Things Claude ALWAYS FOLLOWS, copied into .claude/rules/kit/
+├── rules/                    # Things Claude ALWAYS FOLLOWS, copied into .claude/rules/duyben-kit/
 │   ├── common/
 │   ├── typescript/
 │   └── python/
@@ -49,8 +49,8 @@ Then open `claude` in the project, trust the folder and accept the plugin instal
 Install the `core` plugin once at user scope (see below), then in any project:
 
 ```
-/core:init-kit          # auto-detects the profile from project files
-/core:init-kit python   # or pick one explicitly
+/core:duyben-kit          # auto-detects the profile from project files
+/core:duyben-kit python   # or pick one explicitly
 ```
 
 Restart `claude` afterwards so the new rules and settings are loaded.
@@ -70,7 +70,7 @@ Inside Claude Code:
 |----------------------|--------------------------------------------------------|
 | Rules and settings   | Re-run `install.sh` (pin a version with `KIT_REF=v1.1.0`) |
 | Plugins              | `/plugin marketplace update duyben-kit` in Claude Code |
-| Installed version    | `cat .claude/rules/kit/.kit-info`                      |
+| Installed version    | `cat .claude/rules/duyben-kit/.kit-info`                      |
 
 ## Contributing
 
@@ -82,6 +82,6 @@ Inside Claude Code:
 
 ## Principles
 
-1. **The kit only writes to its own folder.** `.claude/rules/kit/` is overwritten on every install; project-specific rules live outside it.
+1. **The kit only writes to its own folder.** `.claude/rules/duyben-kit/` is overwritten on every install; project-specific rules live outside it.
 2. **Never overwrite project files.** `CLAUDE.md` is created only if missing; `settings.json` is merged.
 3. **Small pieces, composed.** Each plugin or rule group does one thing; a profile is just a list of what to combine.
