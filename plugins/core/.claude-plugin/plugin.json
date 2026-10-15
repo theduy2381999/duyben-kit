@@ -1,0 +1,8 @@
+{
+  "name": "core",
+  "version": "1.0.0",
+  "description": "Skills, commands and agents shared by every project",
+  "author": {
+    "name": "Duy Ngo"
+  }
+}

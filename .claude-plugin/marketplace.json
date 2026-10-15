@@ -1,0 +1,26 @@
+{
+  "name": "duyben-kit",
+  "owner": {
+    "name": "Duy Ngo"
+  },
+  "metadata": {
+    "description": "Reusable skills, commands, agents and hooks for Claude Code projects"
+  },
+  "plugins": [
+    {
+      "name": "core",
+      "source": "./plugins/core",
+      "description": "Skills, commands and agents shared by every project"
+    },
+    {
+      "name": "frontend",
+      "source": "./plugins/frontend",
+      "description": "Tools for React / TypeScript projects"
+    },
+    {
+      "name": "python",
+      "source": "./plugins/python",
+      "description": "Tools for Python projects"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "description": "Tools for React / TypeScript projects",
+  "author": {
+    "name": "Duy Ngo"
+  }
+}
