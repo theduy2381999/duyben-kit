@@ -44,6 +44,17 @@ Arguments: `install.sh [profile] [project-dir]`. Profiles live in `profiles/` (`
 
 Then open `claude` in the project, trust the folder and accept the plugin install prompt. Commit `.claude/` and `CLAUDE.md` so the whole team shares the setup.
 
+### Install from inside Claude Code
+
+Install the `core` plugin once at user scope (see below), then in any project:
+
+```
+/core:init-kit          # auto-detects the profile from project files
+/core:init-kit python   # or pick one explicitly
+```
+
+Restart `claude` afterwards so the new rules and settings are loaded.
+
 ### Install plugins only (user scope)
 
 Inside Claude Code:
