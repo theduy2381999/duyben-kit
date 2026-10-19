@@ -25,7 +25,7 @@
     {
       "name": "docs-digest",
       "source": "./plugins/docs-digest",
-      "description": "Turn a documentation link into a beginner-friendly HTML digest (What / Why / How + FAQ)"
+      "description": "Turn a documentation link into an easy-to-read study page (summary, key terms, notes to remember, recap)"
     }
   ]
 }

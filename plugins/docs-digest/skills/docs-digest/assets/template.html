@@ -2,201 +2,353 @@
 <html lang="{{LANG}}">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<!-- ARTIFACT:START -->
 <title>{{TITLE}}</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;600;700;800&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&family=JetBrains+Mono:wght@400;600&display=swap">
 <style>
+  /* Layout: study notes. Sticky contents rail left, one reading column right.
+     Reading order: 30-second summary → keyword sheet → sections (each ends with "remember") → auto recap. */
   :root {
-    --bg: #f7f7f5;
-    --surface: #ffffff;
-    --text: #1d1f23;
-    --muted: #5f6570;
-    --border: #e2e3e0;
-    --accent: #2f5bd3;
-    --code-bg: #f1f2f0;
-    --what: #2f5bd3;
-    --what-soft: #eaf0fd;
-    --why: #b25e09;
-    --why-soft: #fdf2e5;
-    --how: #18794e;
-    --how-soft: #e7f5ee;
-    --radius: 10px;
-    --sidebar: 280px;
+    --paper: #f5f7fa;
+    --sheet: #ffffff;
+    --ink: #17202c;
+    --ink-soft: #4f5b6b;
+    --rule: #dde3ea;
+    --wash: #eef2f7;
+    --accent: #1f4fd6;
+    --note: #fff6dc;
+    --note-ink: #6b4a00;
+    --note-rule: #f0dc9c;
+    --code-bg: #f0f3f7;
+    /* keyword colours: each keyword keeps one of these everywhere it appears */
+    --k1: #3a47c9; --k1w: #ebedfc;
+    --k2: #0f7a5c; --k2w: #e1f3ec;
+    --k3: #a8560a; --k3w: #fbefe1;
+    --k4: #b4235a; --k4w: #fce8ef;
+    --k5: #0b6f9c; --k5w: #e2f2fa;
+    --k6: #6a3fb5; --k6w: #f1eafb;
+    --font-display: "Schibsted Grotesk", "Segoe UI", system-ui, -apple-system, sans-serif;
+    --font-body: "Literata", "Iowan Old Style", "Charter", Georgia, serif;
+    --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --rail: 280px;
   }
   @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #15171a;
-      --surface: #1d2024;
-      --text: #e6e7e9;
-      --muted: #9aa0a9;
-      --border: #2e3238;
-      --accent: #7c9cf5;
-      --code-bg: #24282d;
-      --what: #8aa8f8;
-      --what-soft: #1f2a44;
-      --why: #f0a75a;
-      --why-soft: #3a2a17;
-      --how: #5fcf98;
-      --how-soft: #173326;
+    :root:not([data-theme="light"]) {
+      --paper: #11151b; --sheet: #171c24; --ink: #e4e8ee; --ink-soft: #9aa5b4;
+      --rule: #2a313c; --wash: #1d232d; --accent: #86a6ff;
+      --note: #2e2614; --note-ink: #f2cf7a; --note-rule: #5a4a1f; --code-bg: #1d232d;
+      --k1: #a3acff; --k1w: #232848;
+      --k2: #5fd3ad; --k2w: #14322a;
+      --k3: #f2ae67; --k3w: #352617;
+      --k4: #ff8fb6; --k4w: #3b1a27;
+      --k5: #6cc8f0; --k5w: #12303d;
+      --k6: #c7a6ff; --k6w: #2c2142;
+      color-scheme: dark;
     }
+  }
+  :root[data-theme="dark"] {
+    --paper: #11151b; --sheet: #171c24; --ink: #e4e8ee; --ink-soft: #9aa5b4;
+    --rule: #2a313c; --wash: #1d232d; --accent: #86a6ff;
+    --note: #2e2614; --note-ink: #f2cf7a; --note-rule: #5a4a1f; --code-bg: #1d232d;
+    --k1: #a3acff; --k1w: #232848;
+    --k2: #5fd3ad; --k2w: #14322a;
+    --k3: #f2ae67; --k3w: #352617;
+    --k4: #ff8fb6; --k4w: #3b1a27;
+    --k5: #6cc8f0; --k5w: #12303d;
+    --k6: #c7a6ff; --k6w: #2c2142;
+    color-scheme: dark;
   }
 
   * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; scroll-padding-top: 16px; }
+  html { scroll-behavior: smooth; scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 20px); }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; } }
   body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--text);
-    font: 16px/1.7 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    margin: 0; background: var(--paper); color: var(--ink);
+    font: 400 1.0625rem/1.8 var(--font-body); -webkit-font-smoothing: antialiased;
   }
-  a { color: var(--accent); }
-  code, pre { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.9em; }
-  :not(pre) > code { background: var(--code-bg); padding: 0.1em 0.35em; border-radius: 4px; }
+  a { color: var(--accent); text-underline-offset: 3px; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+  code, pre { font-family: var(--font-mono); font-size: 0.86em; }
+  :not(pre) > code { background: var(--code-bg); padding: 0.12em 0.38em; border-radius: 5px; }
+  h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; color: var(--ink); }
 
-  /* Layout */
-  .layout { display: grid; grid-template-columns: var(--sidebar) 1fr; min-height: 100vh; }
-  .sidebar {
+  .progress {
+    position: fixed; inset: 0 0 auto; z-index: 40; pointer-events: none;
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  .progress span { display: block; height: 3px; width: 0; background: var(--accent); }
+
+  .layout { display: grid; grid-template-columns: var(--rail) minmax(0, 1fr); min-height: 100vh; }
+
+  /* Contents rail */
+  .rail {
     position: sticky; top: 0; height: 100vh; overflow-y: auto;
-    padding: 24px 16px; border-right: 1px solid var(--border); background: var(--surface);
+    padding-block: calc(env(safe-area-inset-top, 0px) + 28px) 28px;
+    padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: 16px;
+    border-right: 1px solid var(--rule); background: var(--sheet); font-family: var(--font-display);
   }
-  .sidebar h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin: 0 0 12px; }
-  .toc, .toc ul { list-style: none; margin: 0; padding: 0; }
-  .toc ul { padding-left: 12px; margin: 2px 0 8px; border-left: 1px solid var(--border); }
+  .rail-label {
+    margin: 0 0 12px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--ink-soft);
+  }
+  .toc { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; counter-reset: toc; }
   .toc a {
-    display: block; padding: 4px 8px; border-radius: 6px;
-    color: var(--muted); text-decoration: none; font-size: 0.92rem; line-height: 1.4;
+    display: grid; grid-template-columns: 26px 1fr; gap: 8px; align-items: start;
+    padding: 7px 8px; border-radius: 8px; color: var(--ink); text-decoration: none;
+    font-size: 0.92rem; font-weight: 600; line-height: 1.35;
   }
-  .toc ul a { font-size: 0.84rem; }
-  .toc a:hover { color: var(--text); background: var(--code-bg); }
-  .toc a.active { color: var(--accent); background: var(--what-soft); font-weight: 600; }
-
-  main { padding: 40px 24px 80px; }
-  .content { max-width: 72ch; margin: 0 auto; }
-
-  /* Header */
-  .page-header h1 { font-size: 2rem; line-height: 1.25; margin: 0 0 8px; }
-  .meta { color: var(--muted); font-size: 0.9rem; margin: 0 0 24px; }
-  .overview {
-    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
-    padding: 16px 20px; margin-bottom: 40px;
+  .toc a::before {
+    content: "•"; display: grid; place-items: center; width: 22px; height: 22px;
+    border-radius: 50%; border: 1px solid var(--rule); color: var(--ink-soft);
+    font-size: 0.72rem; font-variant-numeric: tabular-nums;
   }
-  .overview-row { display: grid; grid-template-columns: 72px 1fr; gap: 12px; align-items: baseline; padding: 6px 0; }
-  .overview-row + .overview-row { border-top: 1px solid var(--border); }
+  .toc li.num { counter-increment: toc; }
+  .toc li.num a::before { content: counter(toc); }
+  .toc a:hover { background: var(--wash); }
+  .toc a.active { background: var(--wash); color: var(--accent); }
+  .toc a.active::before { background: var(--accent); border-color: var(--accent); color: var(--sheet); }
+
+  /* Reading column */
+  main {
+    min-width: 0; padding-block: 56px 96px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  .column { max-width: 44rem; margin: 0 auto; display: grid; gap: 60px; }
+
+  .masthead { display: grid; gap: 14px; }
+  .eyebrow {
+    margin: 0; font: 700 0.75rem/1 var(--font-display); letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--accent);
+  }
+  h1 { margin: 0; font-size: clamp(2rem, 5vw, 2.9rem); line-height: 1.08; font-weight: 800; letter-spacing: -0.02em; }
+  .meta {
+    margin: 0; display: flex; flex-wrap: wrap; gap: 6px 16px;
+    font: 500 0.85rem/1.5 var(--font-display); color: var(--ink-soft);
+  }
+  .meta a { overflow-wrap: anywhere; }
+
+  .block-title {
+    margin: 0 0 12px; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--ink-soft);
+  }
+
+  /* 30-second summary */
+  .tldr {
+    background: var(--sheet); border: 1px solid var(--rule); border-radius: 14px; padding: 20px 24px;
+  }
+  .tldr ol { margin: 0; padding: 0; list-style: none; counter-reset: tl; display: grid; gap: 12px; }
+  .tldr li {
+    counter-increment: tl; position: relative; padding-left: 42px; min-height: 28px;
+    font-size: 1.05rem; line-height: 1.7;
+  }
+  .tldr li::before {
+    content: counter(tl); position: absolute; left: 0; top: 0.1em;
+    display: grid; place-items: center; width: 28px; height: 28px;
+    border-radius: 8px; background: var(--wash); color: var(--accent);
+    font: 800 0.85rem/1 var(--font-display);
+  }
+
+  /* Keyword sheet */
+  .keywords { display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: 10px; }
+  .kw-entry {
+    display: grid; gap: 4px; padding: 12px 14px; border-radius: 10px;
+    background: var(--kcw, var(--wash)); border: 1px solid transparent;
+  }
+  .kw-entry .kw-term { font: 700 0.95rem/1.3 var(--font-display); color: var(--kc, var(--accent)); }
+  .kw-entry .kw-def { font-size: 0.93rem; line-height: 1.5; }
+  .kw-entry.flash { border-color: var(--kc, var(--accent)); }
+
+  /* Keyword mention inside text */
+  .kw {
+    color: var(--kc, var(--accent)); background: var(--kcw, var(--wash));
+    font-family: var(--font-display); font-weight: 700; font-size: 0.92em;
+    padding: 0.05em 0.4em; border-radius: 6px; cursor: help; white-space: nowrap;
+  }
+  .kw-pop {
+    position: fixed; z-index: 50; max-width: min(22rem, calc(100vw - 32px));
+    padding: 10px 12px; border-radius: 10px; background: var(--ink); color: var(--paper);
+    font: 500 0.85rem/1.45 var(--font-display); box-shadow: 0 8px 24px rgb(0 0 0 / 0.2);
+  }
+  .kw-pop strong { display: block; margin-bottom: 2px; }
 
   /* Sections */
-  .section { padding-top: 8px; margin-bottom: 56px; }
-  .section h2 { font-size: 1.5rem; line-height: 1.3; margin: 0 0 16px; }
-  .block {
-    border-left: 4px solid var(--c); background: var(--soft);
-    border-radius: 0 var(--radius) var(--radius) 0; padding: 12px 16px; margin: 0 0 14px;
+  .section { display: grid; gap: 16px; }
+  .section-head { display: grid; gap: 4px; }
+  .section-num {
+    font: 700 0.8rem/1 var(--font-display); color: var(--ink-soft);
+    letter-spacing: 0.08em; font-variant-numeric: tabular-nums;
   }
-  .block.what { --c: var(--what); --soft: var(--what-soft); }
-  .block.why  { --c: var(--why);  --soft: var(--why-soft); }
-  .block.how  { --c: var(--how);  --soft: var(--how-soft); }
-  .badge {
-    display: inline-flex; align-items: center; gap: 6px;
-    font-size: 0.75rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
-    color: var(--c); margin-bottom: 4px;
+  .section h2 { margin: 0; font-size: 1.6rem; line-height: 1.2; font-weight: 700; letter-spacing: -0.01em; }
+  .prose > * { margin: 0; }
+  .prose { display: grid; gap: 14px; }
+  .prose ul, .prose ol { padding-left: 1.3em; display: grid; gap: 6px; }
+  .prose table { border-collapse: collapse; width: 100%; font-size: 0.95rem; }
+  .prose th, .prose td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  .prose th { font-family: var(--font-display); font-size: 0.85rem; color: var(--ink-soft); }
+  .table-wrap { overflow-x: auto; }
+  .missing { color: var(--ink-soft); font-style: italic; }
+
+  .example {
+    border: 1px dashed var(--rule); border-radius: 12px; padding: 14px 18px; background: var(--sheet);
   }
-  .overview .badge.what { --c: var(--what); }
-  .overview .badge.why  { --c: var(--why); }
-  .overview .badge.how  { --c: var(--how); }
-  .block-body > :first-child { margin-top: 0; }
-  .block-body > :last-child { margin-bottom: 0; }
-  .missing { color: var(--muted); font-style: italic; }
+  .example-label {
+    display: block; margin-bottom: 4px; font: 700 0.75rem/1.2 var(--font-display);
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft);
+  }
+
+  .remember {
+    background: var(--note); border: 1px solid var(--note-rule); border-radius: 12px; padding: 14px 18px;
+  }
+  .remember-label {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 6px;
+    font: 800 0.78rem/1.2 var(--font-display); letter-spacing: 0.1em; text-transform: uppercase; color: var(--note-ink);
+  }
+  .remember-label::before { content: "★"; }
+  .remember ul { margin: 0; padding-left: 1.2em; display: grid; gap: 4px; }
 
   /* Code */
-  .code-wrap { position: relative; margin: 12px 0; }
+  .code-wrap { position: relative; }
   pre {
-    background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px;
-    padding: 14px 16px; overflow-x: auto; line-height: 1.5; margin: 0;
+    margin: 0; padding: 16px 18px; overflow-x: auto; line-height: 1.6;
+    background: var(--code-bg); border: 1px solid var(--rule); border-radius: 10px;
   }
   .copy-btn {
-    position: absolute; top: 8px; right: 8px;
-    font: 600 0.75rem system-ui, sans-serif; padding: 4px 10px; cursor: pointer;
-    color: var(--muted); background: var(--surface); border: 1px solid var(--border); border-radius: 6px;
+    position: absolute; top: 8px; right: 8px; cursor: pointer;
+    font: 600 0.72rem/1 var(--font-display); padding: 6px 10px;
+    color: var(--ink-soft); background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px;
   }
-  .copy-btn:hover { color: var(--text); }
+  .copy-btn:hover { color: var(--ink); }
 
   /* FAQ */
-  .faq { margin-top: 20px; }
-  .faq h3 { font-size: 1rem; margin: 0 0 8px; }
-  details {
-    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
-    margin-bottom: 8px; scroll-margin-top: 16px;
+  .faq { display: grid; gap: 8px; }
+  details { border: 1px solid var(--rule); border-radius: 10px; background: var(--sheet); }
+  summary {
+    list-style: none; cursor: pointer; position: relative;
+    padding: 12px 40px 12px 16px; font: 600 0.95rem/1.45 var(--font-display);
   }
-  summary { cursor: pointer; padding: 10px 14px; font-weight: 600; }
-  details .answer { padding: 0 14px 12px; }
-  details .answer > :first-child { margin-top: 0; }
-  .source-link { display: inline-block; margin-top: 8px; font-size: 0.9rem; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; position: absolute; right: 16px; top: 12px; color: var(--ink-soft); font-weight: 700; }
+  details[open] summary::after { content: "−"; }
+  details[open] { background: var(--wash); }
+  .answer { padding: 0 16px 14px; font-size: 0.98rem; }
 
-  .pages-read { color: var(--muted); font-size: 0.9rem; border-top: 1px solid var(--border); padding-top: 16px; }
+  .source-link {
+    justify-self: start; font: 600 0.85rem/1 var(--font-display); text-decoration: none;
+    padding: 8px 12px; border: 1px solid var(--rule); border-radius: 999px; background: var(--sheet);
+  }
+  .source-link:hover { border-color: var(--accent); }
 
-  /* Mobile */
-  .menu-btn { display: none; }
-  @media (max-width: 900px) {
-    .layout { grid-template-columns: 1fr; }
-    .sidebar {
-      position: fixed; inset: 0 auto 0 0; width: min(85vw, var(--sidebar)); z-index: 20;
-      transform: translateX(-100%); transition: transform 0.2s ease;
-      box-shadow: 0 0 24px rgba(0, 0, 0, 0.2);
+  /* Recap */
+  .recap { background: var(--sheet); border: 1px solid var(--rule); border-radius: 14px; padding: 20px 24px; }
+  .recap-group + .recap-group { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--rule); }
+  .recap-group h3 { margin: 0 0 6px; font-size: 0.98rem; }
+  .recap-group ul { margin: 0; padding-left: 1.2em; display: grid; gap: 4px; }
+
+  .pages {
+    border-top: 1px solid var(--rule); padding-top: 20px;
+    font: 500 0.88rem/1.6 var(--font-display); color: var(--ink-soft);
+  }
+  .pages ol { margin: 0; padding-left: 1.4em; }
+  .pages a { overflow-wrap: anywhere; }
+
+  /* Phone */
+  .menu-btn, .scrim { display: none; }
+  @media (max-width: 920px) {
+    .layout { grid-template-columns: minmax(0, 1fr); }
+    .rail {
+      position: fixed; inset: 0 auto 0 0; z-index: 30; width: min(86vw, var(--rail));
+      transform: translateX(-102%); transition: transform 0.22s ease;
     }
-    body.menu-open .sidebar { transform: none; }
+    body.menu-open .rail { transform: none; }
+    body.menu-open .scrim { display: block; position: fixed; inset: 0; z-index: 25; background: rgb(0 0 0 / 0.35); }
     .menu-btn {
-      display: inline-flex; position: fixed; top: 12px; right: 12px; z-index: 30;
-      padding: 8px 14px; font: 600 0.9rem system-ui, sans-serif; cursor: pointer;
-      color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+      display: inline-flex; align-items: center; gap: 8px; position: fixed; z-index: 35;
+      top: calc(env(safe-area-inset-top, 0px) + 12px); right: calc(env(safe-area-inset-right, 0px) + 12px);
+      padding: 9px 14px; cursor: pointer; font: 700 0.85rem/1 var(--font-display);
+      color: var(--ink); background: var(--sheet); border: 1px solid var(--rule); border-radius: 999px;
+      box-shadow: 0 4px 14px rgb(0 0 0 / 0.08);
     }
-    main { padding: 64px 16px 64px; }
+    main { padding-block: 72px; }
+    .column { gap: 48px; }
+    .tldr, .recap { padding: 16px 18px; }
   }
 </style>
-</head>
-<body>
-<button class="menu-btn" type="button" aria-expanded="false" aria-controls="sidebar">☰ {{MENU_LABEL}}</button>
+
+<div class="progress" aria-hidden="true"><span></span></div>
+<button class="menu-btn" type="button" aria-expanded="false" aria-controls="rail">☰ {{MENU_LABEL}}</button>
+<div class="scrim" aria-hidden="true"></div>
+<div class="kw-pop" role="tooltip" hidden></div>
+
 <div class="layout">
-  <nav class="sidebar" id="sidebar">
-    <h2>{{TOC_LABEL}}</h2>
+  <nav class="rail" id="rail" aria-label="{{TOC_LABEL}}">
+    <p class="rail-label">{{TOC_LABEL}}</p>
     <ul class="toc">
+      <li><a href="#tldr">{{TLDR_LABEL}}</a></li>
+      <li><a href="#keywords">{{KEYWORDS_LABEL}}</a></li>
 <!-- TOC:START -->
-      <li><a href="#s-1">1. Section title</a>
-        <ul>
-          <li><a href="#s-1-faq-1">Question one?</a></li>
-        </ul>
-      </li>
+      <li class="num"><a href="#s-1">Section title</a></li>
 <!-- TOC:END -->
+      <li><a href="#recap">{{RECAP_LABEL}}</a></li>
     </ul>
   </nav>
 
   <main>
-    <div class="content">
-      <header class="page-header">
-        <h1>{{TITLE}}</h1>
-        <p class="meta">{{SOURCE_LABEL}}: <a href="{{SOURCE_URL}}">{{SOURCE_URL}}</a> · {{DATE}}</p>
-        <div class="overview">
-          <div class="overview-row"><span class="badge what">◆ What</span><span>{{OVERVIEW_WHAT}}</span></div>
-          <div class="overview-row"><span class="badge why">▲ Why</span><span>{{OVERVIEW_WHY}}</span></div>
-          <div class="overview-row"><span class="badge how">● How</span><span>{{OVERVIEW_HOW}}</span></div>
-        </div>
+    <div class="column">
+      <header class="masthead">
+        <p class="eyebrow">{{DIGEST_LABEL}}</p>
+        <h1>{{DOCS_NAME}}</h1>
+        <p class="meta">
+          <span>{{SOURCE_LABEL}}: <a href="{{SOURCE_URL}}">{{SOURCE_URL}}</a></span>
+          <span>{{DATE}}</span>
+        </p>
       </header>
+
+      <section id="tldr" class="tldr">
+        <h2 class="block-title">{{TLDR_LABEL}}</h2>
+        <ol>
+<!-- TLDR:START -->
+          <li>One big idea, with a <span class="kw" data-kw="example">keyword</span> in it.</li>
+<!-- TLDR:END -->
+        </ol>
+      </section>
+
+      <section id="keywords">
+        <h2 class="block-title">{{KEYWORDS_LABEL}}</h2>
+        <div class="keywords">
+<!-- KEYWORDS:START -->
+          <div class="kw-entry" id="kw-example" data-kw="example">
+            <span class="kw-term">keyword</span>
+            <span class="kw-def">One plain sentence explaining it.</span>
+          </div>
+<!-- KEYWORDS:END -->
+        </div>
+      </section>
 
 <!-- SECTIONS:START -->
       <section class="section" id="s-1">
-        <h2>1. Section title</h2>
-        <div class="block what">
-          <span class="badge">◆ What · {{WHAT_LABEL}}</span>
-          <div class="block-body"><p>One or two plain sentences.</p></div>
+        <div class="section-head">
+          <span class="section-num">01</span>
+          <h2>Section title</h2>
         </div>
-        <div class="block why">
-          <span class="badge">▲ Why · {{WHY_LABEL}}</span>
-          <div class="block-body"><p class="missing">{{NOT_COVERED}}</p></div>
+        <div class="prose">
+          <p>Short, plain explanation. Mention a <span class="kw" data-kw="example">keyword</span> the same way every time.</p>
+          <div class="example"><span class="example-label">{{EXAMPLE_LABEL}}</span><p>A concrete example from the docs.</p></div>
+          <pre><code>npm install example</code></pre>
         </div>
-        <div class="block how">
-          <span class="badge">● How · {{HOW_LABEL}}</span>
-          <div class="block-body">
-            <pre><code>npm install example</code></pre>
-          </div>
+        <div class="remember">
+          <div class="remember-label">{{REMEMBER_LABEL}}</div>
+          <ul>
+            <li>The one thing to keep from this section.</li>
+          </ul>
         </div>
         <div class="faq">
-          <h3>FAQ</h3>
           <details id="s-1-faq-1">
             <summary>Question one?</summary>
             <div class="answer"><p>Answer grounded in the docs.</p></div>
@@ -206,13 +358,18 @@
       </section>
 <!-- SECTIONS:END -->
 
-      <footer class="pages-read">
-        <strong>{{PAGES_READ_LABEL}}</strong>
-        <ul>
+      <section id="recap" class="recap">
+        <h2 class="block-title">{{RECAP_LABEL}}</h2>
+        <div class="recap-body"></div>
+      </section>
+
+      <footer class="pages">
+        <h2 class="block-title">{{PAGES_READ_LABEL}}</h2>
+        <ol>
 <!-- PAGES:START -->
           <li><a href="{{SOURCE_URL}}">{{SOURCE_URL}}</a></li>
 <!-- PAGES:END -->
-        </ul>
+        </ol>
       </footer>
     </div>
   </main>
@@ -222,21 +379,84 @@
 (() => {
   const body = document.body;
   const menuBtn = document.querySelector('.menu-btn');
+  const scrim = document.querySelector('.scrim');
   const links = [...document.querySelectorAll('.toc a')];
+  const bar = document.querySelector('.progress span');
 
-  // Mobile menu
+  // Keyword colours: the n-th keyword in the sheet gets colour n, everywhere it appears
+  const entries = [...document.querySelectorAll('.kw-entry')];
+  const glossary = new Map();
+  entries.forEach((entry, i) => {
+    const n = (i % 6) + 1;
+    const colour = { kc: `var(--k${n})`, kcw: `var(--k${n}w)` };
+    glossary.set(entry.dataset.kw, {
+      colour,
+      term: entry.querySelector('.kw-term').textContent,
+      def: entry.querySelector('.kw-def').textContent,
+      entry,
+    });
+    entry.style.setProperty('--kc', colour.kc);
+    entry.style.setProperty('--kcw', colour.kcw);
+  });
+  const pop = document.querySelector('.kw-pop');
+  const showPop = (el) => {
+    const k = glossary.get(el.dataset.kw);
+    if (!k) return;
+    pop.innerHTML = '';
+    const strong = document.createElement('strong');
+    strong.textContent = k.term;
+    pop.append(strong, document.createTextNode(k.def));
+    pop.hidden = false;
+    const r = el.getBoundingClientRect();
+    const w = pop.offsetWidth;
+    const left = Math.min(Math.max(16, r.left + r.width / 2 - w / 2), window.innerWidth - w - 16);
+    const above = r.top - pop.offsetHeight - 8;
+    pop.style.left = `${left}px`;
+    pop.style.top = `${above > 8 ? above : r.bottom + 8}px`;
+  };
+  const hidePop = () => { pop.hidden = true; };
+  const bindKeyword = (el) => {
+    const k = glossary.get(el.dataset.kw);
+    if (!k) return;
+    el.style.setProperty('--kc', k.colour.kc);
+    el.style.setProperty('--kcw', k.colour.kcw);
+    el.tabIndex = 0;
+    el.addEventListener('mouseenter', () => showPop(el));
+    el.addEventListener('mouseleave', hidePop);
+    el.addEventListener('focus', () => showPop(el));
+    el.addEventListener('blur', hidePop);
+  };
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') hidePop(); });
+  window.addEventListener('scroll', hidePop, { passive: true });
+
+  // Recap: collect every "remember" list, grouped by section
+  const recap = document.querySelector('.recap-body');
+  document.querySelectorAll('.section').forEach((section) => {
+    const items = section.querySelectorAll('.remember li');
+    if (!items.length) return;
+    const group = document.createElement('div');
+    group.className = 'recap-group';
+    const h = document.createElement('h3');
+    const link = document.createElement('a');
+    link.href = `#${section.id}`;
+    link.textContent = section.querySelector('h2').textContent;
+    h.append(link);
+    const ul = document.createElement('ul');
+    items.forEach((li) => ul.append(li.cloneNode(true)));
+    group.append(h, ul);
+    recap.append(group);
+  });
+  // Bind after the recap is built so its cloned keywords are included
+  document.querySelectorAll('.kw').forEach(bindKeyword);
+
+  // Phone menu
   const setMenu = (open) => {
     body.classList.toggle('menu-open', open);
     menuBtn.setAttribute('aria-expanded', String(open));
   };
   menuBtn.addEventListener('click', () => setMenu(!body.classList.contains('menu-open')));
-
-  // TOC click: open a FAQ target and close the mobile menu
-  links.forEach((link) => link.addEventListener('click', () => {
-    const target = document.getElementById(link.hash.slice(1));
-    if (target && target.tagName === 'DETAILS') target.open = true;
-    setMenu(false);
-  }));
+  scrim.addEventListener('click', () => setMenu(false));
+  links.forEach((link) => link.addEventListener('click', () => setMenu(false)));
 
   // Copy buttons on code blocks
   document.querySelectorAll('pre').forEach((pre) => {
@@ -251,32 +471,40 @@
     btn.addEventListener('click', async () => {
       try {
         await navigator.clipboard.writeText(pre.innerText);
-        btn.textContent = '✓';
+        btn.textContent = 'Copied';
       } catch {
-        btn.textContent = '✗';
+        const range = document.createRange();
+        range.selectNodeContents(pre);
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        btn.textContent = 'Selected';
       }
       setTimeout(() => { btn.textContent = 'Copy'; }, 1500);
     });
     wrap.append(btn);
   });
 
-  // Scrollspy: highlight the section (and FAQ) currently in view
-  const byId = new Map(links.map((a) => [a.hash.slice(1), a]));
-  const targets = [...byId.keys()].map((id) => document.getElementById(id)).filter(Boolean);
+  // Reading progress
+  const onScroll = () => {
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    bar.style.width = max > 0 ? `${(window.scrollY / max) * 100}%` : '0';
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // Scrollspy
+  const targets = links.map((a) => document.getElementById(a.hash.slice(1))).filter(Boolean);
   const visible = new Set();
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((e) => (e.isIntersecting ? visible.add(e.target) : visible.delete(e.target)));
-    const current = targets.filter((t) => visible.has(t));
-    if (!current.length) return;
-    const active = new Set();
-    const section = current.find((t) => t.classList.contains('section')) || current[0].closest('.section');
-    if (section) active.add(section.id);
-    const faq = current.find((t) => t.tagName === 'DETAILS');
-    if (faq) active.add(faq.id);
-    links.forEach((a) => a.classList.toggle('active', active.has(a.hash.slice(1))));
+  const observer = new IntersectionObserver((entriesSeen) => {
+    entriesSeen.forEach((e) => (e.isIntersecting ? visible.add(e.target) : visible.delete(e.target)));
+    const current = targets.find((t) => visible.has(t));
+    if (!current) return;
+    links.forEach((a) => a.classList.toggle('active', a.hash === `#${current.id}`));
   }, { rootMargin: '0px 0px -60% 0px' });
   targets.forEach((t) => observer.observe(t));
 })();
 </script>
+<!-- ARTIFACT:END -->
 </body>
 </html>
