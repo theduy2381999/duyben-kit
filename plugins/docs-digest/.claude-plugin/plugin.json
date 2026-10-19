@@ -1,0 +1,8 @@
+{
+  "name": "docs-digest",
+  "version": "1.0.0",
+  "description": "Turn a documentation link into a beginner-friendly HTML digest (What / Why / How + FAQ)",
+  "author": {
+    "name": "Duy Ngo"
+  }
+}

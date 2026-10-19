@@ -11,7 +11,8 @@ duyben-kit/
 ├── plugins/                  # Things Claude CALLS ON DEMAND: skills, commands, agents, hooks
 │   ├── core/                 # Shared by every project
 │   ├── frontend/             # React / TypeScript
-│   └── python/               # Python
+│   ├── python/               # Python
+│   └── docs-digest/          # Docs link → beginner-friendly HTML digest
 ├── rules/                    # Things Claude ALWAYS FOLLOWS, copied into .claude/rules/duyben-kit/
 │   ├── common/
 │   ├── typescript/

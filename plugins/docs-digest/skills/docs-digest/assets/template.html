@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="{{LANG}}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITLE}}</title>
+<style>
+  :root {
+    --bg: #f7f7f5;
+    --surface: #ffffff;
+    --text: #1d1f23;
+    --muted: #5f6570;
+    --border: #e2e3e0;
+    --accent: #2f5bd3;
+    --code-bg: #f1f2f0;
+    --what: #2f5bd3;
+    --what-soft: #eaf0fd;
+    --why: #b25e09;
+    --why-soft: #fdf2e5;
+    --how: #18794e;
+    --how-soft: #e7f5ee;
+    --radius: 10px;
+    --sidebar: 280px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15171a;
+      --surface: #1d2024;
+      --text: #e6e7e9;
+      --muted: #9aa0a9;
+      --border: #2e3238;
+      --accent: #7c9cf5;
+      --code-bg: #24282d;
+      --what: #8aa8f8;
+      --what-soft: #1f2a44;
+      --why: #f0a75a;
+      --why-soft: #3a2a17;
+      --how: #5fcf98;
+      --how-soft: #173326;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 16px; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.7 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  a { color: var(--accent); }
+  code, pre { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.9em; }
+  :not(pre) > code { background: var(--code-bg); padding: 0.1em 0.35em; border-radius: 4px; }
+
+  /* Layout */
+  .layout { display: grid; grid-template-columns: var(--sidebar) 1fr; min-height: 100vh; }
+  .sidebar {
+    position: sticky; top: 0; height: 100vh; overflow-y: auto;
+    padding: 24px 16px; border-right: 1px solid var(--border); background: var(--surface);
+  }
+  .sidebar h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin: 0 0 12px; }
+  .toc, .toc ul { list-style: none; margin: 0; padding: 0; }
+  .toc ul { padding-left: 12px; margin: 2px 0 8px; border-left: 1px solid var(--border); }
+  .toc a {
+    display: block; padding: 4px 8px; border-radius: 6px;
+    color: var(--muted); text-decoration: none; font-size: 0.92rem; line-height: 1.4;
+  }
+  .toc ul a { font-size: 0.84rem; }
+  .toc a:hover { color: var(--text); background: var(--code-bg); }
+  .toc a.active { color: var(--accent); background: var(--what-soft); font-weight: 600; }
+
+  main { padding: 40px 24px 80px; }
+  .content { max-width: 72ch; margin: 0 auto; }
+
+  /* Header */
+  .page-header h1 { font-size: 2rem; line-height: 1.25; margin: 0 0 8px; }
+  .meta { color: var(--muted); font-size: 0.9rem; margin: 0 0 24px; }
+  .overview {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 16px 20px; margin-bottom: 40px;
+  }
+  .overview-row { display: grid; grid-template-columns: 72px 1fr; gap: 12px; align-items: baseline; padding: 6px 0; }
+  .overview-row + .overview-row { border-top: 1px solid var(--border); }
+
+  /* Sections */
+  .section { padding-top: 8px; margin-bottom: 56px; }
+  .section h2 { font-size: 1.5rem; line-height: 1.3; margin: 0 0 16px; }
+  .block {
+    border-left: 4px solid var(--c); background: var(--soft);
+    border-radius: 0 var(--radius) var(--radius) 0; padding: 12px 16px; margin: 0 0 14px;
+  }
+  .block.what { --c: var(--what); --soft: var(--what-soft); }
+  .block.why  { --c: var(--why);  --soft: var(--why-soft); }
+  .block.how  { --c: var(--how);  --soft: var(--how-soft); }
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.75rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+    color: var(--c); margin-bottom: 4px;
+  }
+  .overview .badge.what { --c: var(--what); }
+  .overview .badge.why  { --c: var(--why); }
+  .overview .badge.how  { --c: var(--how); }
+  .block-body > :first-child { margin-top: 0; }
+  .block-body > :last-child { margin-bottom: 0; }
+  .missing { color: var(--muted); font-style: italic; }
+
+  /* Code */
+  .code-wrap { position: relative; margin: 12px 0; }
+  pre {
+    background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px;
+    padding: 14px 16px; overflow-x: auto; line-height: 1.5; margin: 0;
+  }
+  .copy-btn {
+    position: absolute; top: 8px; right: 8px;
+    font: 600 0.75rem system-ui, sans-serif; padding: 4px 10px; cursor: pointer;
+    color: var(--muted); background: var(--surface); border: 1px solid var(--border); border-radius: 6px;
+  }
+  .copy-btn:hover { color: var(--text); }
+
+  /* FAQ */
+  .faq { margin-top: 20px; }
+  .faq h3 { font-size: 1rem; margin: 0 0 8px; }
+  details {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    margin-bottom: 8px; scroll-margin-top: 16px;
+  }
+  summary { cursor: pointer; padding: 10px 14px; font-weight: 600; }
+  details .answer { padding: 0 14px 12px; }
+  details .answer > :first-child { margin-top: 0; }
+  .source-link { display: inline-block; margin-top: 8px; font-size: 0.9rem; }
+
+  .pages-read { color: var(--muted); font-size: 0.9rem; border-top: 1px solid var(--border); padding-top: 16px; }
+
+  /* Mobile */
+  .menu-btn { display: none; }
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar {
+      position: fixed; inset: 0 auto 0 0; width: min(85vw, var(--sidebar)); z-index: 20;
+      transform: translateX(-100%); transition: transform 0.2s ease;
+      box-shadow: 0 0 24px rgba(0, 0, 0, 0.2);
+    }
+    body.menu-open .sidebar { transform: none; }
+    .menu-btn {
+      display: inline-flex; position: fixed; top: 12px; right: 12px; z-index: 30;
+      padding: 8px 14px; font: 600 0.9rem system-ui, sans-serif; cursor: pointer;
+      color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    }
+    main { padding: 64px 16px 64px; }
+  }
+</style>
+</head>
+<body>
+<button class="menu-btn" type="button" aria-expanded="false" aria-controls="sidebar">☰ {{MENU_LABEL}}</button>
+<div class="layout">
+  <nav class="sidebar" id="sidebar">
+    <h2>{{TOC_LABEL}}</h2>
+    <ul class="toc">
+<!-- TOC:START -->
+      <li><a href="#s-1">1. Section title</a>
+        <ul>
+          <li><a href="#s-1-faq-1">Question one?</a></li>
+        </ul>
+      </li>
+<!-- TOC:END -->
+    </ul>
+  </nav>
+
+  <main>
+    <div class="content">
+      <header class="page-header">
+        <h1>{{TITLE}}</h1>
+        <p class="meta">{{SOURCE_LABEL}}: <a href="{{SOURCE_URL}}">{{SOURCE_URL}}</a> · {{DATE}}</p>
+        <div class="overview">
+          <div class="overview-row"><span class="badge what">◆ What</span><span>{{OVERVIEW_WHAT}}</span></div>
+          <div class="overview-row"><span class="badge why">▲ Why</span><span>{{OVERVIEW_WHY}}</span></div>
+          <div class="overview-row"><span class="badge how">● How</span><span>{{OVERVIEW_HOW}}</span></div>
+        </div>
+      </header>
+
+<!-- SECTIONS:START -->
+      <section class="section" id="s-1">
+        <h2>1. Section title</h2>
+        <div class="block what">
+          <span class="badge">◆ What · {{WHAT_LABEL}}</span>
+          <div class="block-body"><p>One or two plain sentences.</p></div>
+        </div>
+        <div class="block why">
+          <span class="badge">▲ Why · {{WHY_LABEL}}</span>
+          <div class="block-body"><p class="missing">{{NOT_COVERED}}</p></div>
+        </div>
+        <div class="block how">
+          <span class="badge">● How · {{HOW_LABEL}}</span>
+          <div class="block-body">
+            <pre><code>npm install example</code></pre>
+          </div>
+        </div>
+        <div class="faq">
+          <h3>FAQ</h3>
+          <details id="s-1-faq-1">
+            <summary>Question one?</summary>
+            <div class="answer"><p>Answer grounded in the docs.</p></div>
+          </details>
+        </div>
+        <a class="source-link" href="{{SOURCE_URL}}">{{SOURCE_LINK_LABEL}} ↗</a>
+      </section>
+<!-- SECTIONS:END -->
+
+      <footer class="pages-read">
+        <strong>{{PAGES_READ_LABEL}}</strong>
+        <ul>
+<!-- PAGES:START -->
+          <li><a href="{{SOURCE_URL}}">{{SOURCE_URL}}</a></li>
+<!-- PAGES:END -->
+        </ul>
+      </footer>
+    </div>
+  </main>
+</div>
+
+<script>
+(() => {
+  const body = document.body;
+  const menuBtn = document.querySelector('.menu-btn');
+  const links = [...document.querySelectorAll('.toc a')];
+
+  // Mobile menu
+  const setMenu = (open) => {
+    body.classList.toggle('menu-open', open);
+    menuBtn.setAttribute('aria-expanded', String(open));
+  };
+  menuBtn.addEventListener('click', () => setMenu(!body.classList.contains('menu-open')));
+
+  // TOC click: open a FAQ target and close the mobile menu
+  links.forEach((link) => link.addEventListener('click', () => {
+    const target = document.getElementById(link.hash.slice(1));
+    if (target && target.tagName === 'DETAILS') target.open = true;
+    setMenu(false);
+  }));
+
+  // Copy buttons on code blocks
+  document.querySelectorAll('pre').forEach((pre) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'code-wrap';
+    pre.replaceWith(wrap);
+    wrap.append(pre);
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'copy-btn';
+    btn.textContent = 'Copy';
+    btn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(pre.innerText);
+        btn.textContent = '✓';
+      } catch {
+        btn.textContent = '✗';
+      }
+      setTimeout(() => { btn.textContent = 'Copy'; }, 1500);
+    });
+    wrap.append(btn);
+  });
+
+  // Scrollspy: highlight the section (and FAQ) currently in view
+  const byId = new Map(links.map((a) => [a.hash.slice(1), a]));
+  const targets = [...byId.keys()].map((id) => document.getElementById(id)).filter(Boolean);
+  const visible = new Set();
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((e) => (e.isIntersecting ? visible.add(e.target) : visible.delete(e.target)));
+    const current = targets.filter((t) => visible.has(t));
+    if (!current.length) return;
+    const active = new Set();
+    const section = current.find((t) => t.classList.contains('section')) || current[0].closest('.section');
+    if (section) active.add(section.id);
+    const faq = current.find((t) => t.tagName === 'DETAILS');
+    if (faq) active.add(faq.id);
+    links.forEach((a) => a.classList.toggle('active', active.has(a.hash.slice(1))));
+  }, { rootMargin: '0px 0px -60% 0px' });
+  targets.forEach((t) => observer.observe(t));
+})();
+</script>
+</body>
+</html>
